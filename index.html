@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>QR Studio — Customisable QR codes</title>
+  <meta name="description" content="Generate beautifully customisable QR codes. Colors, gradients, shapes, logos. No limits, no signup, no tracking." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff6ec7'/%3E%3Cstop offset='.5' stop-color='%23a78bfa'/%3E%3Cstop offset='1' stop-color='%2360a5fa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cpath fill='white' d='M14 14h12v12H14zm4 4v4h4v-4zm20-4h12v12H38zm4 4v4h4v-4zm-28 20h12v12H14zm4 4v4h4v-4zm20-4h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4zm8 0h4v4h-4z'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
+  <script type="module">
+    import QRCode from "https://cdn.jsdelivr.net/npm/qrcode@1.5.4/+esm";
+    window.QRCode = QRCode;
+    window.dispatchEvent(new Event("qrcode-loaded"));
+  </script>
+  <script src="app.js" defer></script>
+</head>
+<body data-engine-mode="styled">
+  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="bg-grain" aria-hidden="true"></div>
+
+  <header class="app-header glass">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">QR Studio</span>
+      <span class="brand-tag">customisable · client-side · unlimited</span>
+    </div>
+    <a class="ghost-link" href="https://github.com/omariosc/qr-code-generator" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2c-3.2.7-3.87-1.36-3.87-1.36-.52-1.34-1.27-1.7-1.27-1.7-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.95.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.77.11 3.06.73.81 1.18 1.84 1.18 3.1 0 4.43-2.7 5.41-5.27 5.69.41.36.78 1.06.78 2.15v3.19c0 .31.21.68.8.56C20.22 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+      <span>GitHub</span>
+    </a>
+  </header>
+
+  <main class="layout">
+    <section class="controls glass" aria-label="QR code settings">
+      <div class="field">
+        <label for="url">URL or text</label>
+        <input id="url" type="text" value="https://github.com/omariosc/qr-code-generator" autocomplete="off" spellcheck="false" />
+      </div>
+
+      <div class="segmented" role="tablist" aria-label="Rendering engine">
+        <button type="button" role="tab" aria-selected="true" data-engine="styled">Styled</button>
+        <button type="button" role="tab" aria-selected="false" data-engine="simple">Simple</button>
+      </div>
+      <p class="hint-line subtle">
+        <span data-engine-only="styled">Full styling — gradients, shapes, logos. Powered by <code>qr-code-styling</code>.</span>
+        <span data-engine-only="simple">Lean &amp; fast — colors only. Powered by <code>qrcode</code>.</span>
+      </p>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="size">Size <span class="hint" id="size-val">320</span></label>
+          <input id="size" type="range" min="120" max="800" step="10" value="320" />
+        </div>
+        <div class="field">
+          <label for="margin">Margin <span class="hint" id="margin-val">8</span></label>
+          <input id="margin" type="range" min="0" max="40" step="1" value="8" />
+        </div>
+        <div class="field">
+          <label for="ecl">Error correction</label>
+          <select id="ecl">
+            <option value="L">Low (7%)</option>
+            <option value="M">Medium (15%)</option>
+            <option value="Q">Quartile (25%)</option>
+            <option value="H" selected>High (30%)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="format">Format</label>
+          <select id="format">
+            <option value="png" selected>PNG</option>
+            <option value="svg">SVG</option>
+            <option value="jpeg" data-styled-only>JPEG</option>
+            <option value="webp" data-styled-only>WebP</option>
+          </select>
+        </div>
+      </div>
+
+      <fieldset class="group">
+        <legend>Foreground</legend>
+        <div class="color-row">
+          <label class="color">
+            <input id="fg" type="color" value="#1d1d1f" />
+            <span>Color</span>
+          </label>
+          <label class="toggle styled-only">
+            <input id="fg-gradient" type="checkbox" />
+            <span>Gradient</span>
+          </label>
+        </div>
+        <div class="gradient-controls styled-only" data-for="fg" hidden>
+          <label class="color">
+            <input id="fg-color2" type="color" value="#6e6e73" />
+            <span>End color</span>
+          </label>
+          <div class="field inline">
+            <label for="fg-gtype">Type</label>
+            <select id="fg-gtype">
+              <option value="linear" selected>Linear</option>
+              <option value="radial">Radial</option>
+            </select>
+          </div>
+          <div class="field inline">
+            <label for="fg-rotation">Rotation <span class="hint" id="fg-rot-val">0°</span></label>
+            <input id="fg-rotation" type="range" min="0" max="360" step="1" value="0" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="group">
+        <legend>Background</legend>
+        <div class="color-row">
+          <label class="color">
+            <input id="bg" type="color" value="#ffffff" />
+            <span>Color</span>
+          </label>
+          <label class="toggle">
+            <input id="bg-transparent" type="checkbox" />
+            <span>Transparent</span>
+          </label>
+          <label class="toggle styled-only">
+            <input id="bg-gradient" type="checkbox" />
+            <span>Gradient</span>
+          </label>
+        </div>
+        <div class="gradient-controls styled-only" data-for="bg" hidden>
+          <label class="color">
+            <input id="bg-color2" type="color" value="#f5f5f7" />
+            <span>End color</span>
+          </label>
+          <div class="field inline">
+            <label for="bg-gtype">Type</label>
+            <select id="bg-gtype">
+              <option value="linear" selected>Linear</option>
+              <option value="radial">Radial</option>
+            </select>
+          </div>
+          <div class="field inline">
+            <label for="bg-rotation">Rotation <span class="hint" id="bg-rot-val">0°</span></label>
+            <input id="bg-rotation" type="range" min="0" max="360" step="1" value="0" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="group styled-only">
+        <legend>Shapes</legend>
+        <div class="field-grid">
+          <div class="field">
+            <label for="dot-style">Dots</label>
+            <select id="dot-style">
+              <option value="square">Square</option>
+              <option value="rounded">Rounded</option>
+              <option value="dots">Dots</option>
+              <option value="classy">Classy</option>
+              <option value="classy-rounded">Classy rounded</option>
+              <option value="extra-rounded" selected>Extra rounded</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="corner-sq">Corner squares</label>
+            <select id="corner-sq">
+              <option value="square">Square</option>
+              <option value="dot">Dot</option>
+              <option value="extra-rounded" selected>Extra rounded</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="corner-dot">Corner dots</label>
+            <select id="corner-dot">
+              <option value="square">Square</option>
+              <option value="dot" selected>Dot</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="group styled-only">
+        <legend>Logo</legend>
+        <div class="logo-row">
+          <label class="file-btn">
+            <input id="logo" type="file" accept="image/*" />
+            <span>Choose image…</span>
+          </label>
+          <button type="button" id="logo-clear" class="ghost-btn" hidden>Remove</button>
+          <span id="logo-name" class="hint subtle" aria-live="polite"></span>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="logo-size">Size <span class="hint" id="logo-size-val">40%</span></label>
+            <input id="logo-size" type="range" min="10" max="60" step="1" value="40" />
+          </div>
+          <div class="field">
+            <label for="logo-margin">Margin <span class="hint" id="logo-margin-val">8</span></label>
+            <input id="logo-margin" type="range" min="0" max="40" step="1" value="8" />
+          </div>
+        </div>
+        <label class="toggle">
+          <input id="logo-hide-dots" type="checkbox" checked />
+          <span>Hide dots behind logo</span>
+        </label>
+      </fieldset>
+
+      <div class="actions">
+        <button type="button" id="reset" class="ghost-btn">Reset defaults</button>
+      </div>
+    </section>
+
+    <section class="preview-pane" aria-label="QR code preview">
+      <div class="preview-card glass">
+        <div id="preview" class="preview" aria-live="polite"></div>
+        <button type="button" id="download" class="floating-btn" aria-label="Download QR code">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"/><path d="M6 12l6 6 6-6"/><path d="M4 20h16"/></svg>
+          <span>Download</span>
+        </button>
+      </div>
+      <p class="hint-line subtle">Right-click the QR to copy, or use the download button below.</p>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>Built with <a href="https://github.com/kozakdenys/qr-code-styling" target="_blank" rel="noopener">qr-code-styling</a> &amp; <a href="https://github.com/soldair/node-qrcode" target="_blank" rel="noopener">qrcode</a>.</span>
+    <span>Runs entirely in your browser — nothing is uploaded.</span>
+  </footer>
+</body>
+</html>
