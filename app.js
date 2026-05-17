@@ -25,14 +25,67 @@
   const defaults = {
     fg: "#1d1d1f", bg: "#ffffff", fgColor2: "#6e6e73", bgColor2: "#f5f5f7",
     size: 320, margin: 8, ecl: "H", format: "png",
-    dotStyle: "extra-rounded", cornerSq: "extra-rounded", cornerDot: "dot",
+    dotStyle: "square", cornerSq: "square", cornerDot: "square",
     fgRotation: 0, bgRotation: 0, fgGtype: "linear", bgGtype: "linear",
     logoSize: 40, logoMargin: 8, logoHideDots: true,
   };
 
+  const STORAGE_KEY = "qr-studio-settings-v1";
   let engine = "styled";
   let logoDataUrl = null;
   let styledQR = null;
+
+  function saveState() {
+    const s = {
+      url: els.url.value, engine,
+      size: els.size.value, margin: els.margin.value,
+      ecl: els.ecl.value, format: els.format.value,
+      fg: els.fg.value, fgColor2: els.fgColor2.value,
+      fgGradient: els.fgGradient.checked,
+      fgGtype: els.fgGtype.value, fgRotation: els.fgRotation.value,
+      bg: els.bg.value, bgColor2: els.bgColor2.value,
+      bgGradient: els.bgGradient.checked, bgTransparent: els.bgTransparent.checked,
+      bgGtype: els.bgGtype.value, bgRotation: els.bgRotation.value,
+      dotStyle: els.dotStyle.value, cornerSq: els.cornerSq.value, cornerDot: els.cornerDot.value,
+      logoSize: els.logoSize.value, logoMargin: els.logoMargin.value,
+      logoHideDots: els.logoHideDots.checked,
+    };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch (_) { /* private mode / quota */ }
+  }
+
+  function loadState() {
+    let raw;
+    try { raw = localStorage.getItem(STORAGE_KEY); } catch (_) { return false; }
+    if (!raw) return false;
+    let s;
+    try { s = JSON.parse(raw); } catch (_) { return false; }
+    const setVal = (el, v) => { if (el && v !== undefined && v !== null) el.value = v; };
+    const setChk = (el, v) => { if (el && typeof v === "boolean") el.checked = v; };
+    const setText = (el, txt) => { if (el && txt !== undefined && txt !== null) el.textContent = txt; };
+
+    setVal(els.url, s.url);
+    setVal(els.size, s.size); setText(els.sizeVal, s.size);
+    setVal(els.margin, s.margin); setText(els.marginVal, s.margin);
+    setVal(els.ecl, s.ecl); setVal(els.format, s.format);
+    setVal(els.fg, s.fg); setVal(els.fgColor2, s.fgColor2);
+    setChk(els.fgGradient, s.fgGradient);
+    setVal(els.fgGtype, s.fgGtype);
+    setVal(els.fgRotation, s.fgRotation); setText(els.fgRotVal, s.fgRotation !== undefined ? s.fgRotation + "°" : undefined);
+    setVal(els.bg, s.bg); setVal(els.bgColor2, s.bgColor2);
+    setChk(els.bgGradient, s.bgGradient); setChk(els.bgTransparent, s.bgTransparent);
+    setVal(els.bgGtype, s.bgGtype);
+    setVal(els.bgRotation, s.bgRotation); setText(els.bgRotVal, s.bgRotation !== undefined ? s.bgRotation + "°" : undefined);
+    setVal(els.dotStyle, s.dotStyle); setVal(els.cornerSq, s.cornerSq); setVal(els.cornerDot, s.cornerDot);
+    setVal(els.logoSize, s.logoSize); setText(els.logoSizeVal, s.logoSize !== undefined ? s.logoSize + "%" : undefined);
+    setVal(els.logoMargin, s.logoMargin); setText(els.logoMarginVal, s.logoMargin);
+    setChk(els.logoHideDots, s.logoHideDots);
+    if (s.engine === "simple" || s.engine === "styled") engine = s.engine;
+    return true;
+  }
+
+  function clearState() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+  }
 
   function setEngine(name) {
     engine = name;
@@ -166,6 +219,7 @@
   function render() {
     clearTimeout(renderTimer);
     renderTimer = setTimeout(async () => {
+      saveState();
       const data = els.url.value || " ";
       try {
         if (engine === "styled") {
@@ -236,6 +290,7 @@
     els.logo.value = "";
     els.logoClear.hidden = true;
     els.logoName.textContent = "";
+    clearState();
     syncGradientControls("fg");
     syncGradientControls("bg");
     render();
@@ -306,7 +361,8 @@
 
   function init() {
     bind();
-    setEngine("styled");
+    const restored = loadState();
+    setEngine(restored ? engine : "styled");
     syncGradientControls("fg");
     syncGradientControls("bg");
     waitForLibs(render);
